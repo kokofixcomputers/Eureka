@@ -56,8 +56,12 @@ function classNames(...classes: (string | null | undefined)[]): string {
   return classes.filter(Boolean).join(' ');
 }
 
-function stringToDataURL (str: string) {
-  return `data:text/plain;base64,${btoa(str)}`;
+function utoa(data) {
+  return btoa(unescape(encodeURIComponent(data)));
+}
+
+function stringToDataURL(str) {
+  return `data:text/plain;base64,${utoa(str)}`;
 }
 
 function SwitchComponent (props: SwitchProps) {
@@ -93,11 +97,13 @@ function SwitchComponent (props: SwitchProps) {
 function LoaderForm() {
   const [loaderType, setLoaderType] = createSignal<LoaderType>('URL');
   const [extensionURL, setURL] = createSignal('');
+  const [errorMessage, setErrorMessage] = createSignal('');
   const [extensionCode, setCode] = createSignal('');
-  const [extensionFile, setFile] = createSignal<File | null>();
+  const [extensionFile, setFile] = createSignal<File | null>(null);
+  const [fileContent, setFileContent] = createSignal<string | null>(null); // Store file content
   const [loading, setLoading] = createSignal(false);
 
-  function shouldDisable () {
+  function shouldDisable() {
     if (loading()) return true;
     switch (loaderType()) {
       case 'URL':
@@ -105,7 +111,9 @@ function LoaderForm() {
       case 'Code':
         return !extensionCode().trim();
       case 'File':
-        return !extensionFile();
+        return !extensionFile(); // Ensure this returns false when a file is selected
+      default:
+        return true; // Default case to ensure safety
     }
   }
 
@@ -117,7 +125,7 @@ function LoaderForm() {
             class={`${styles.loaderTab} ${type === loaderType() ? styles.active : ''}`}
             onClick={() => setLoaderType(type)}
           >
-            {formatMessage({id: `eureka.loader.${type.toLowerCase()}`, default: type})}
+            {formatMessage({ id: `eureka.loader.${type.toLowerCase()}`, default: type })}
           </div>
         ))}
       </div>
@@ -127,7 +135,7 @@ function LoaderForm() {
           <Match when={loaderType() === 'URL'}>
             <input
               type="text"
-              placeholder={formatMessage({id: 'eureka.loader.url.placeholder', default: 'Enter extension URL here'})}
+              placeholder={formatMessage({ id: 'eureka.loader.url.placeholder', default: 'Enter extension URL here' })}
               onChange={(e) => setURL(e.currentTarget.value)}
               value={extensionURL()}
               class={styles.input}
@@ -135,9 +143,10 @@ function LoaderForm() {
           </Match>
           <Match when={loaderType() === 'Code'}>
             <textarea
-              placeholder={formatMessage({id: 'eureka.loader.code.placeholder', default: 'Paste extension code here'})}
+              placeholder={formatMessage({ id: 'eureka.loader.code.placeholder', default: 'Paste extension code here' })}
               class={styles.textarea}
               onChange={(e) => setCode(e.currentTarget.value)}
+              value={extensionCode()} // Bind value to textarea
             />
           </Match>
           <Match when={loaderType() === 'File'}>
@@ -145,41 +154,59 @@ function LoaderForm() {
               type="file"
               accept=".js"
               class={styles.input}
-              placeholder={formatMessage({id: 'eureka.loader.file.placeholder', default: 'Choose a file'})}
+              onChange={(e) => {
+                const files = e.currentTarget.files;
+                if (files && files.length > 0) {
+                  const file = files[0];
+                  setFile(file); // Update signal with the selected file
+
+                  // Read the file as text and store its content
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    setFileContent(reader.result as string); // Store the file content
+                  };
+                  reader.readAsText(file); // Read the file as text
+                } else {
+                  setFile(null); // Reset if no file is selected
+                  setFileContent(null); // Reset file content if no file is selected
+                }
+              }}
             />
           </Match>
         </Switch>
 
-        <button
-          class={styles.button}
-          disabled={shouldDisable()}
+        {/* Button Element */}
+        <button 
+          class={styles.button} 
+          disabled={shouldDisable()} 
           onClick={async () => {
-          switch (loaderType()) {
-            case 'URL':
-              setLoading(true);
-              await eureka.load(extensionURL());
-              setLoading(false);
-              break;
-            case 'Code':
-              setLoading(true);
-              await eureka.load(stringToDataURL(extensionCode()));
-              setLoading(false);
-              break;
-            case 'File':
-              if (extensionFile()) {
-                const reader = new FileReader();
-                reader.onload = async () => {
-                  setLoading(true);
-                  eureka.load(reader.result as string);
-                  setLoading(false);
-                };
-                reader.readAsText(extensionFile());
+            setLoading(true); // Set loading to true at the start of loading process
+            try {
+              switch (loaderType()) {
+                case 'URL':
+                  await eureka.load(extensionURL());
+                  break;
+                case 'Code':
+                  await eureka.load(stringToDataURL(extensionCode()));
+                  break;
+                case 'File':
+                  if (fileContent()) { // Use stored file content
+                    await eureka.load(stringToDataURL(fileContent()));
+                  }
+                  break;
               }
-              break;
-          }
-        }}>
+            
+            } catch (error) {
+              setErrorMessage("Error loading extension:" + error);
+              console.error("Error loading extension:", error); // Handle any errors that occur during loading
+            } finally {
+              setLoading(false); // Ensure loading is set to false after loading completes or fails
+            }
+          }}
+        >
           <FormattedMessage id="eureka.loader.load" default="Load Extension" />
         </button>
+        {errorMessage() && <span className='errorText'>{errorMessage()}</span>} {/* Display error message below the button */}
       </div>
     </div>
   );
