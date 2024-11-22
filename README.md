@@ -53,7 +53,7 @@ Here is a list of release channel to choose from including the description:
 |------------|-------------|--------|
 | Release | The most stable channel | ✅ |
 | Aurora | Nightly (everytime a push happens, a new build is made) most likely to have bugs | ✅ |
-| Beta | A newer testing version of the script. | ❌ (I am planning to add this) |
+| Beta | A newer testing version of the script. | ✅ |
 | Canary | More bugs. Before Beta | ❌ (I am planning to add this) |
 
 # 📦 Installation
