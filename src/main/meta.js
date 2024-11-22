@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        Eureka
+// @name        EurekaFork
 // @namespace   EurekaScratch
 // @description Universal Scratch Extension Loader.
 // @match       http://localhost:8601/*
@@ -25,6 +25,7 @@
 // @match       https://code.xueersi.com/*
 // @match       https://electramod.vercel.app/*
 // @match       https://xplab.vercel.app/*
+// @match       https://editor.snail-ide.com/*
 // @run-at      document-start
 // @grant       none
 // @version     process.env.VERSION
