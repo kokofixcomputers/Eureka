@@ -37,19 +37,29 @@ Eureka is a userscript which can load 3rd-party extensions in any Scratch-based 
 | TurboWarp                       | ✅                      | ✅                       | ✅                                      | ✅                       | ❓                |
 | Xueersi (学而思)                 | ✅                      | ✅                       | ✅                                      | ✅                       | ❓                |
 | Creaticode                      | ✅                      | ✅                       | ✅                                      | ✅                       | ❓                |
-| Adacraft                        | ✅                      | ✅                       | ✅                                      | ✅                        | ❓               |
+| Adacraft                        | ✅                      | ✅                       | ✅                                      | ✅                       | ❓                |
 | PenguinMod                      | ✅                      | ❓                       | ❓                                      | ❓                       | ❓                |
 | ElectraMod                      | ✅                      | ❓                       | ❓                                      | ❓                       | ❓                |
 | XPLab                           | ✅                      | ❓                       | ❓                                      | ❓                       | ❓                |
+| Snail IDE                       | ✅                      | ❓                       | ❓                                      | ❓                       | ❓                |
 
 # 🧵 Why my extensions don't works?
 
 Eureka is the glue that makes it all work by independently implementing a Scratch extension loading system in a non-sandboxed environment. But Eureka doesn't completely eliminate the problems that come with different environments - as a prime example, the extension tries to read either a vm or a blocks instance. If your extension doesn't work, check to see if the extension modifies something specific to the Scratch mod, and try to report it to the extension's author.
 
+# 📦 Which Release channel to choose from?
+Here is a list of release channel to choose from including the description:
+| Release Channel | Description | In Use? |
+|------------|-------------|--------|
+| Release | The most stable channel | ✅ |
+| Aurora | Nightly (everytime a push happens, a new build is made) most likely to have bugs | ✅ |
+| Beta | A newer testing version of the script. | ❌ (I am planning to add this) |
+| Canary | More bugs. Before Beta | ❌ (I am planning to add this) |
+
 # 📦 Installation
 
 1. Install UserScript Manager like Tampermonkey or Violentmonkey.
-2. Install Eureka from [Github Releases](https://github.com/EurekaScratch/eureka/releases).
+2. Install Eureka from [Github Releases](https://github.com/kokofixcomputers/Eureka/releases).
 3. Enjoy!!
 
 # ⚓ License
