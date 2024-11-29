@@ -26,6 +26,7 @@
 // @match       https://electramod.vercel.app/*
 // @match       https://xplab.vercel.app/*
 // @match       https://editor.snail-ide.com/*
+// @match       https://kokodevelopment.github.io/*
 // @run-at      document-start
 // @grant       none
 // @version     process.env.VERSION
